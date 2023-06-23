@@ -10,8 +10,9 @@ import { OfferServiceInterface } from '../offer/offer-service.interface.js';
 import HttpError from '../../core/errors/http-error.js';
 import { HttpMethod } from '../../types/http-method.enum.js';
 import { fillDTO } from '../../core/helpers/common.js';
-import CommentResponse from './rdo/comment.rdo.js';
+import CommentRdo from './rdo/comment.rdo.js';
 import {ValidateDtoMiddleware} from '../../core/middlewares/validate-dto.middleware.js';
+import { PrivateRouteMiddleware } from '../../core/middlewares/private-route.middleware.js';
 
 export default class CommentController extends Controller {
   constructor(
@@ -27,13 +28,14 @@ export default class CommentController extends Controller {
       method: HttpMethod.Post,
       handler: this.create,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateDtoMiddleware(CreateCommentDto),
       ]
     });
   }
 
   public async create(
-    {body}: Request<object, object, CreateCommentDto>,
+    { body, user }: Request<Record<string, unknown>, Record<string, unknown>, CreateCommentDto>,
     res: Response
   ): Promise<void> {
 
@@ -45,8 +47,8 @@ export default class CommentController extends Controller {
       );
     }
 
-    const comment = await this.commentService.create(body);
-    await this.offerService.incCommentCount(body.offerId);
-    this.created(res, fillDTO(CommentResponse, comment));
+    const comment = await this.commentService.create({ ...body, userId: user.id });
+    await this.offerService.addComment(body.offerId, body.rating);
+    this.created(res, fillDTO(CommentRdo, comment));
   }
 }

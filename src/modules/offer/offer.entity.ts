@@ -1,7 +1,7 @@
 import typegoose, { defaultClasses, getModelForClass, Ref } from '@typegoose/typegoose';
 import { UserEntity } from '../user/user.entity.js';
-import { OfferType } from '../../types/offer-type.enum.js';
-import { City } from '../../types/city.enum.js';
+import { OfferType } from '../../types/rent-type.enum.js';
+import { City } from '../../types/city-names.enum.js';
 import { FeatureType } from '../../types/feature-type.enum.js';
 
 const { prop, modelOptions } = typegoose;
@@ -19,9 +19,6 @@ export class OfferEntity extends defaultClasses.TimeStamps {
 
   @prop({trim: true, required: true})
   public description!: string;
-
-  @prop({required: true})
-  public postDate!: Date;
 
   @prop({
     type: () => String,
@@ -42,13 +39,13 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({required: true})
   public isPremium!: boolean;
 
-  @prop({required: true})
-  public isFavorite!: boolean;
-
   @prop({
     required: true,
-    default: 0
+    default: false,
   })
+  private isFavorite?: boolean;
+
+  @prop({default: 0})
   public rating!: number;
 
   @prop({
@@ -88,6 +85,15 @@ export class OfferEntity extends defaultClasses.TimeStamps {
 
   @prop({required: true})
   public longitude!: number;
+
+  public setIsFavorite(newValue: boolean) {
+    this.isFavorite = newValue;
+    return this.isFavorite;
+  }
+
+  public getIsFavorite() {
+    return this.isFavorite;
+  }
 }
 
 export const OfferModel = getModelForClass(OfferEntity);

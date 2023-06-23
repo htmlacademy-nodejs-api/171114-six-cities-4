@@ -1,18 +1,18 @@
-import {OfferType} from '../../../types/offer-type.enum.js';
+import {OfferType} from '../../../types/rent-type.enum.js';
 import { IsArray, IsDateString, IsEnum, IsInt, IsMongoId, IsBoolean, Max, MaxLength, Min, MinLength, IsOptional } from 'class-validator';
 import {MIN_LENGHT, Title, Description, RoomsNumber, AdultsNumber, Price, Latitude, Longitude } from '../offer.constant.js';
-import { City } from '../../../types/city.enum.js';
+import { City } from '../../../types/city-names.enum.js';
 import { FeatureType } from '../../../types/feature-type.enum.js';
 
 export default class UpdateOfferDto {
   @IsOptional()
-  @MinLength(Title.Min, {message: 'Minimum title length must be $Title.Min'})
-  @MaxLength(Title.Max, {message: 'Maximum title length must be $Title.Max'})
+  @MinLength(Title.Min, {message: `Minimum title length must be ${Title.Min}`})
+  @MaxLength(Title.Max, {message: `Maximum title length must be ${Title.Max}`})
   public title!: string;
 
   @IsOptional()
-  @MinLength(Description.Min, {message: 'Minimum title length must be $Description.Min'})
-  @MaxLength(Description.Max, {message: 'Maximum title length must be $Description.Max'})
+  @MinLength(Description.Min, {message: `Minimum title length must be ${Description.Min}`})
+  @MaxLength(Description.Max, {message: `Maximum title length must be ${Description.Max}`})
   public description!: string;
 
   @IsOptional()
@@ -35,10 +35,6 @@ export default class UpdateOfferDto {
   @IsOptional()
   @IsBoolean({message: 'Field isPremium must be boolean'})
   public isPremium!: boolean;
-
-  @IsOptional()
-  @IsBoolean({message: 'Field isFavorite must be boolean'})
-  public isFavorite!: boolean;
 
   @IsOptional()
   @IsEnum(OfferType, {message: 'type must be &OfferType'})
@@ -74,9 +70,6 @@ export default class UpdateOfferDto {
   @IsOptional()
   @IsInt({message: 'Comment count must be an integer'})
   public commentCount!: number;
-  // public static async findBySpecies(this: ReturnModelType<typeof OfferEntity>, commentCount: number) {
-  //   return this.getCommentsCount({ commentCount }).exec();
-  // }
 
   @IsOptional()
   @IsInt({message: 'Latitude count must be an integer'})

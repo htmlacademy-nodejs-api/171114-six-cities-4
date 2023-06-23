@@ -7,13 +7,10 @@ export interface OfferServiceInterface {
   create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>>;
   findById(offerId: string): Promise<DocumentType<OfferEntity> | null>;
   find(): Promise<DocumentType<OfferEntity>[]>;
+  findMany(offerIds:() => string[]): Promise<DocumentType<OfferEntity>[]>
   deleteById(offerId: string): Promise<DocumentType<OfferEntity> | null>;
   updateById(offerId: string, dto: UpdateOfferDto): Promise<DocumentType<OfferEntity> | null>;
-  incCommentCount(offerId: string): Promise<DocumentType<OfferEntity> | null>;
-  findNew(count: number): Promise<DocumentType<OfferEntity>[]>;
-  findDiscussed(count: number): Promise<DocumentType<OfferEntity>[]>;
+  addComment(offerId: string, newRating: number): Promise<DocumentType<OfferEntity> | null>;
   exists(documentId: string): Promise<boolean>;
   findPremiumOffers(): Promise<DocumentType<OfferEntity>[]>;
-  findFavoriteOffers(): Promise<DocumentType<OfferEntity>[]>;
-  changeFavorite(offerId: string): Promise<DocumentType<OfferEntity> | null>;
 }
