@@ -8,8 +8,6 @@ import { getMongoURI } from '../core/helpers/index.js';
 import express, { Express } from 'express';
 import { ControllerInterface } from '../core/controller/controller.interface.js';
 import { ExceptionFilterInterface } from '../core/expception-filters/exception-filter.interface.js';
-import bodyParser from 'body-parser';
-import { booleanize } from 'express-query-booleanizer';
 import { AuthenticateMiddleware } from '../core/middlewares/authenticate.middleware.js';
 
 @injectable()
@@ -27,7 +25,7 @@ export default class RestApplication {
     this.expressApplication = express();
   }
 
-  private async _initDb() {
+  private async initDb() {
     this.logger.info('Init database…');
 
     const mongoUri = getMongoURI(
@@ -42,16 +40,16 @@ export default class RestApplication {
     this.logger.info('Init database completed');
   }
 
-  private async _initServer() {
+  private async initServer() {
     this.logger.info('Try to init server…');
 
     const port = this.config.get('PORT');
     this.expressApplication.listen(port);
 
-    this.logger.info(`🚀Server started on http://localhost:${this.config.get('PORT')}`);
+    this.logger.info(`🚀Server started on http://localhost:${port}`);
   }
 
-  private async _initRoutes() {
+  private async initRoutes() {
     this.logger.info('Controller initialization…');
     this.expressApplication.use('/users', this.userController.router);
     this.expressApplication.use('/offers', this.offerController.router);
@@ -59,11 +57,9 @@ export default class RestApplication {
     this.logger.info('Controller initialization completed');
   }
 
-  private async _initMiddleware() {
+  private async initMiddleware() {
     this.logger.info('Global middleware initialization…');
     this.expressApplication.use(express.json());
-    this.expressApplication.use(bodyParser.json());
-    this.expressApplication.use(booleanize());
     this.expressApplication.use(
       '/upload',
       express.static(this.config.get('UPLOAD_DIRECTORY'))
@@ -74,7 +70,7 @@ export default class RestApplication {
     this.logger.info('Global middleware initialization completed');
   }
 
-  private async _initExceptionFilters() {
+  private async initExceptionFilters() {
     this.logger.info('Exception filters initialization');
     this.expressApplication.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
     this.logger.info('Exception filters completed');
@@ -82,13 +78,13 @@ export default class RestApplication {
 
   public async init() {
     this.logger.info('Application initialization…');
-    this.logger.info(`Get value from env $PORT: ${this.config.get('PORT')}`);
 
-    this.logger.info('Init database…');
-    await this._initDb();
-    await this._initMiddleware();
-    await this._initRoutes();
-    await this._initExceptionFilters();
-    await this._initServer();
+    await this.initDb()
+      .catch(console.error);
+    await this.initMiddleware();
+    await this.initRoutes();
+    await this.initExceptionFilters();
+    await this.initServer()
+      .catch(console.error);
   }
 }

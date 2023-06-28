@@ -1,21 +1,23 @@
-import { IsBoolean, IsEmail, IsString, Length, MaxLength } from 'class-validator';
-import { Name, Password } from '../user.constant.js';
+import { IsEmail, IsString, IsUrl, Length, Matches } from 'class-validator';
+import { NAME_LENGHT, PASSWORD_LENGHT } from '../user.constant.js';
+import { UserType } from '../../../types/user-type.enum.js';
 
 export default class CreateUserDto {
-  @IsEmail({}, {message: 'email must be valid address'})
+  @IsEmail({}, {message: 'Email must be valid address'})
   public email!: string;
 
-  @MaxLength(256, {message: 'Too short for field «image»'})
+  @IsUrl()
+  @Matches((/\.(jpe?g|png)$/i), {message: 'File should be end with any one of the following extensions: jpg, jpeg, png'})
   public avatarPath?: string;
 
   @IsString({message: 'name is required'})
-  @Length(Name.Min, Name.Max, {message: `Min length is ${Name.Min}, max is ${Name.Max}`})
+  @Length(NAME_LENGHT.MIN, NAME_LENGHT.MAX, {message: `Min length is ${NAME_LENGHT.MIN}, max is ${NAME_LENGHT.MAX}`})
   public name!: string;
 
-  @IsBoolean({message: 'isPro is required'})
-  public isPro!: boolean;
+  @IsString({message: 'Status of user is required'})
+  public isPro!: UserType;
 
   @IsString({message: 'password is required'})
-  @Length(Password.Min, Password.Max, {message: `Min length for password is ${Password.Min}, max is  ${Password.Max}`})
+  @Length(PASSWORD_LENGHT.MIN, PASSWORD_LENGHT.MAX, {message: `Min length for password is ${PASSWORD_LENGHT.MIN}, max is  ${PASSWORD_LENGHT.MAX}`})
   public password!: string;
 }

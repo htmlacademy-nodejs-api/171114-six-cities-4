@@ -1,4 +1,3 @@
-
 import { CliCommandInterface } from '../core/cli-command/cli-command.interface';
 
 type ParsedCommand = Record<string, string[]>
@@ -9,17 +8,17 @@ export default class CLIApplication {
 
   private parseCommand(cliArguments: string[]): ParsedCommand {
     const parsedCommand: ParsedCommand = {};
-    let command = '';
+    let command: string;
 
-    return cliArguments.reduce((acc, item) => {
+    return cliArguments.reduce((items, item) => {
       if (item.startsWith('--')) {
-        acc[item] = [];
+        items[item] = [];
         command = item;
       } else if (command && item) {
-        acc[command].push(item);
+        items[command].push(item);
       }
 
-      return acc;
+      return items;
     }, parsedCommand);
   }
 
@@ -36,10 +35,10 @@ export default class CLIApplication {
   }
 
   public registerCommands(commandList: CliCommandInterface[]): void {
-    commandList.reduce((acc, command) => {
+    commandList.reduce((items, command) => {
       const cliCommand = command;
-      acc[cliCommand.name] = cliCommand;
-      return acc;
+      items[cliCommand.name] = cliCommand;
+      return items;
     }, this.commands);
   }
 

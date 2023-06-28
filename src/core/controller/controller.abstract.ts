@@ -8,17 +8,12 @@ import asyncHandler from 'express-async-handler';
 
 @injectable()
 export abstract class Controller implements ControllerInterface {
-  private readonly _router: Router;
+  public readonly router = Router();
 
   constructor(
     protected readonly logger: LoggerInterface
-  ) {
-    this._router = Router();
-  }
+  ) {}
 
-  get router() {
-    return this._router;
-  }
 
   public addRoute(route: RouteInterface) {
     const routeHandler = asyncHandler(route.handler.bind(this));
@@ -27,7 +22,7 @@ export abstract class Controller implements ControllerInterface {
     );
 
     const allHandlers = middlewares ? [...middlewares, routeHandler] : routeHandler;
-    this._router[route.method](route.path, allHandlers);
+    this.router[route.method](route.path, allHandlers);
     this.logger.info(`Route registered: ${route.method.toUpperCase()} ${route.path}`);
   }
 

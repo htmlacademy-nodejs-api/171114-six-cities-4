@@ -1,52 +1,54 @@
-import { OfferType } from '../../../types/rent-type.enum.js';
-import { IsEnum, IsInt, IsBoolean, Max, MaxLength, Min, MinLength, IsLatitude, IsLongitude } from 'class-validator';
-import { City } from '../../../types/city-names.enum.js';
-import { MIN_LENGHT, Title, Description, RoomsNumber, AdultsNumber, Price } from '../offer.constant.js';
+import { RentType } from '../../../types/rent-type.enum.js';
+import { IsEnum, IsInt, IsBoolean, Max, MaxLength, Min, MinLength, IsLatitude, IsLongitude, IsNotEmpty, IsUrl, IsArray, ArrayMinSize } from 'class-validator';
+import { CityNames } from '../../../types/city-names.enum.js';
+import { TITLE_LENGHT, DESC_LENGHT, COUNT_OF_IMAGES, ROOMS_NUMBER, GEST_NUMBER, PRICE } from '../offer.constant.js';
 import { FeatureType } from '../../../types/feature-type.enum.js';
 
 export default class CreateOfferDto {
-  @MinLength(Title.Min, {message: `Minimum title length must be ${Title.Min}`})
-  @MaxLength(Title.Max, {message: `Maximum title length must be ${Title.Max}`})
+  @MinLength(TITLE_LENGHT.MIN, {message: `Minimum title length must be ${TITLE_LENGHT.MIN}`})
+  @MaxLength(TITLE_LENGHT.MAX, {message: `Maximum title length must be ${TITLE_LENGHT.MAX}`})
   public title!: string;
 
-  @MinLength(Description.Min, {message: `Minimum title length must be ${Description.Min}`})
-  @MaxLength(Description.Max, {message: `Maximum title length must be ${Description.Max}`})
+  @MinLength(DESC_LENGHT.MIN, {message: `Minimum title length must be ${DESC_LENGHT.MIN}`})
+  @MaxLength(DESC_LENGHT.MAX, {message: `Maximum title length must be ${DESC_LENGHT.MAX}`})
   public description!: string;
 
-  @IsEnum(City, {message: 'type must be Paris, or Cologne, or Brussels, or Amsterdam, or Hamburg, or Dusseldorf'})
-  public city!:	City;
+  @IsEnum(CityNames, {message: `type must be  ${Object.values(RentType)}`})
+  public city!:	CityNames;
 
-  @MaxLength(MIN_LENGHT, {message: 'Too short for field «image»'})
+  @IsNotEmpty({message: 'Preview image is required'})
+  @IsUrl()
   public previewImage!: string;
 
-  @MaxLength(MIN_LENGHT, {message: 'Too short for field «image»', each: true})
+  @IsArray()
+  @ArrayMinSize(COUNT_OF_IMAGES, {message: `Count of image must be ${COUNT_OF_IMAGES}`})
   public images!: string[];
 
   @IsBoolean({message: 'Field isPremium must be boolean'})
   public isPremium!: boolean;
 
-  @IsEnum(OfferType, {message: 'type must be OfferType'})
-  public type!: OfferType;
+  @IsEnum(RentType, {message: `type must be ${Object.values(RentType)}`})
+  public type!: RentType;
 
-  @IsInt({message: 'BedroomsNumber must be an integer'})
-  @Min(RoomsNumber.Min, {message: `Minimum bedroomsNumber is ${RoomsNumber.Min}`})
-  @Max(RoomsNumber.Max, {message: `Maximum bedroomsNumber is ${RoomsNumber.Min}`})
-  public bedroomsNumber!: number;
+  @IsInt({message: 'RoomsNumber must be an integer'})
+  @Min(ROOMS_NUMBER.MIN, {message: `Minimum roomsNumber is ${ROOMS_NUMBER.MIN}`})
+  @Max(ROOMS_NUMBER.MAX, {message: `Maximum roomsNumber is ${ROOMS_NUMBER.MAX}`})
+  public roomsNumber!: number;
 
-  @IsInt({message: 'MaxAdultsNumber must be an integer'})
-  @Min(AdultsNumber.Min, {message: `Minimum bedroomsNumber is  ${AdultsNumber.Min}`})
-  @Max(AdultsNumber.Max, {message: `Maximum bedroomsNumber is ${AdultsNumber.Min}`})
-  public maxAdultsNumber!: number;
+  @IsInt({message: 'GestNumber must be an integer'})
+  @Min(GEST_NUMBER.MIN, {message: `Minimum gestNumber is  ${GEST_NUMBER.MIN}`})
+  @Max(GEST_NUMBER.MAX, {message: `Maximum gestNumber is ${GEST_NUMBER.MAX}`})
+  public gestNumber!: number;
 
   @IsInt({message: 'Price must be an integer'})
-  @Min(Price.Min, {message: `Minimum price is ${Price.Min}`})
-  @Max(Price.Max, {message: `Maximum price is ${Price.Min}`})
+  @Min(PRICE.MIN, {message: `Minimum price is ${PRICE.MIN}`})
+  @Max(PRICE.MAX, {message: `Maximum price is ${PRICE.MAX}`})
   public price!: number;
 
   @IsEnum(FeatureType, {message: 'type must be FeatureType', each: true})
   public features!: FeatureType[];
 
-  public hostId!: string;
+  public userId!: string;
 
   @IsLatitude({message: 'Latitude count must be a valid latitude coordinate'})
   public latitude!: number;
