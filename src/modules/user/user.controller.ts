@@ -17,20 +17,20 @@ import { ValidateDtoMiddleware } from '../../core/middlewares/validate-dto.middl
 import { ValidateObjectIdMiddleware } from '../../core/middlewares/validate-objectid.middleware.js';
 import { UploadFileMiddleware } from '../../core/middlewares/upload-file.middleware.js';
 import { UnknownRecord } from '../../types/unknown-record.type.js';
-import { JWT_ALGORITHM } from './user.constant.js';
+import { JWT_ALGORITHM } from './user.constant';
 import LoggedUserRdo from './rdo/logged-user.rdo.js';
 import UploadAvatarRdo from './rdo/upload-avatar.rdo.js';
 import { PrivateRouteMiddleware } from '../../core/middlewares/private-route.middleware.js';
-import { BLOCKED_TOKENS } from './user.constant.js';
+import { BLOCKED_TOKENS } from './user.constant';
 
 @injectable()
 export default class UserController extends Controller {
   constructor(
     @inject(AppComponent.LoggerInterface) protected readonly logger: LoggerInterface,
     @inject(AppComponent.UserServiceInterface) private readonly userService: UserServiceInterface,
-    @inject(AppComponent.ConfigInterface) private readonly configService: ConfigInterface<RestSchema>
+    @inject(AppComponent.ConfigInterface) protected configService: ConfigInterface<RestSchema>
   ) {
-    super(logger);
+    super(logger, configService);
     this.logger.info('Register routes for UserController…');
 
     this.addRoute({
@@ -114,10 +114,9 @@ export default class UserController extends Controller {
       }
     );
 
-    this.ok(res, fillDTO(LoggedUserRdo, {
-      email: user.email,
+    this.ok(res, { ...fillDTO(LoggedUserRdo, user),
       token
-    }));
+    });
   }
 
   public async logout(req: Request, res: Response): Promise<void> {
@@ -136,17 +135,16 @@ export default class UserController extends Controller {
     this.noContent(res, { token });
   }
 
-  public async checkAuthenticate({ user: { email }}: Request, res: Response) {
-    const foundedUser = await this.userService.findByEmail(email);
-
-    if (! foundedUser) {
+  public async checkAuthenticate(req: Request, res: Response) {
+    if (! req.user) {
       throw new HttpError(
         StatusCodes.UNAUTHORIZED,
         'Unauthorized',
         'UserController'
       );
     }
-
+    const { user: { email } } = req;
+    const foundedUser = await this.userService.findByEmail(email);
     this.ok(res, fillDTO(LoggedUserRdo, foundedUser));
   }
 
